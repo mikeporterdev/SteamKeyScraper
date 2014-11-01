@@ -6,6 +6,7 @@ Created on 1 Nov 2014
 import praw
 import re
 import time
+from pprint import pprint
 
 from settings import api_key
 
@@ -21,15 +22,16 @@ def getKey(post):
 
 def scrapeSubreddit(connection, subreddit):
 
-    submissions = connection.get_subreddit(subreddit).get_new(limit=2)
+    submissions = connection.get_subreddit(subreddit).get_new(limit=100)
     keysList = []
     for submission in submissions:
         post = vars(submission)
+        title = post['title']
         body = post['selftext']
         keys = getKey(body)
         if keys:      
             #pushToDevices(str(submission), keys)
-            keysList.append(({str(submission) : keys}))
+            keysList.append({title : keys})
     return keysList
     
 
