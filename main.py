@@ -6,16 +6,22 @@ Created on 1 Nov 2014
 import praw
 import re
 import time
-from pprint import pprint
 
 from settings import api_key, subreddits
 
-
-#from pushbullet import PushBullet
-#def pushToDevices(title, key):
-#    pb = PushBullet(api_key)
-#    phone = pb.push_note(title, key)
-#    print(phone.status_code)
+def pushToDevices(postTitle, key):
+    import requests
+    #data=dict(device_id='OnePlus A0001', title=postTitle, body=key, type='note')
+    #requests.post('https://www.pushbullet.com/v2/', auth=(api_key,''), data=data)
+    #devices = requests.get('https://api.pushbullet.com/v2/devices', auth=(api_key, '')).json()
+    #deviceid = devices['devices'][2]['iden']
+    data = {
+            "type" : "note",
+            "title" : postTitle,
+            "body" : key
+            }
+    push = requests.post('https://api.pushbullet.com/v2/pushes', auth=(api_key, ''), data=data)
+    print(push.json())
 
 def getKey(post):
     code = re.findall(r'[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+', post)  
@@ -24,7 +30,7 @@ def getKey(post):
 def scrapeSubreddit(connection, subreddit):
 
     submissions = connection.get_subreddit(subreddit).get_new(limit=25)
-    keysList = []
+    keysList = {}
     for submission in submissions:
         post = vars(submission)
         title = post['title']
@@ -32,7 +38,7 @@ def scrapeSubreddit(connection, subreddit):
         keys = getKey(body)
         if keys:      
             #pushToDevices(str(submission), keys)
-            keysList.append({title : keys})
+            keysList[title] = keys
     return keysList
     
 
@@ -46,7 +52,8 @@ def main():
             if key:
                 if not key in keys:
                     keys.append(key)
-                    print(key)
+                    for thing in key:
+                        pushToDevices(thing, key[thing])
         time.sleep(31)
 
 if __name__ == '__main__':
