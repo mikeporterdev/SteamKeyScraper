@@ -5,25 +5,39 @@ Created on 1 Nov 2014
 '''
 import praw
 import re
+#from pushbullet import PushBullet
+from settings import api_key
     
+
+#def pushToDevices(title, key):
+#    pb = PushBullet(api_key)
+#    phone = pb.push_note(title, key)
+#    print(phone.status_code)
     
-def get_key(post):
-    #keyMatch = re.compile("r'[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+'")   
-    #reg = re.match(keyMatch, "A2DL3-23SOD-23LKS")
+def getKey(post):
     code = re.findall(r'[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+', post)  
     return code
 
-def main():
-    r = praw.Reddit(user_agent = "Praw Test")
-    submissions = r.get_subreddit('Gaming').get_new(limit=100)
+def scrapeSubreddit(connection, subreddit):
+
+    submissions = connection.get_subreddit(subreddit).get_new(limit=100)
     
     for submission in submissions:
-        things = vars(submission)
-        body = things['selftext']
-        keys = get_key(body)
-        if keys:
-            print(submission)
-            print(keys)            
+        post = vars(submission)
+        body = post['selftext']
+        keys = getKey(body)
+        if keys:      
+            #pushToDevices(str(submission), keys)     
+            print(str(submission))
+            print(keys)
+
+def main():
+    r = praw.Reddit(user_agent = "Steam Key Scraper")
+    subreddits = ['pcgaming', 'gaming', 'steam', 'games']
+    for subreddit in subreddits:
+        print(subreddit)
+        scrapeSubreddit(r, subreddit)
+
 
 if __name__ == '__main__':
     main()
