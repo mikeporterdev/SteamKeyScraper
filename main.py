@@ -8,7 +8,7 @@ import re
 import time
 from pprint import pprint
 
-from settings import api_key
+from settings import api_key, subreddits
 
 
 #from pushbullet import PushBullet
@@ -16,13 +16,14 @@ from settings import api_key
 #    pb = PushBullet(api_key)
 #    phone = pb.push_note(title, key)
 #    print(phone.status_code)
+
 def getKey(post):
     code = re.findall(r'[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+', post)  
     return code
 
 def scrapeSubreddit(connection, subreddit):
 
-    submissions = connection.get_subreddit(subreddit).get_new(limit=100)
+    submissions = connection.get_subreddit(subreddit).get_new(limit=25)
     keysList = []
     for submission in submissions:
         post = vars(submission)
@@ -40,7 +41,6 @@ def main():
     r = praw.Reddit(user_agent = "Steam Key Scraper")
     keys = []
     while True:
-        subreddits = ['games', 'gaming', 'pcgaming', 'steam', 'evolvekeys']
         for subreddit in subreddits:
             key = scrapeSubreddit(r, subreddit)
             if key:
