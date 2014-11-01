@@ -7,21 +7,16 @@ import praw
 import re
 import time
 
-from settings import api_key, subreddits
+from settings import pushbullet, api_key, subreddits
 
 def pushToDevices(postTitle, key):
     import requests
-    #data=dict(device_id='OnePlus A0001', title=postTitle, body=key, type='note')
-    #requests.post('https://www.pushbullet.com/v2/', auth=(api_key,''), data=data)
-    #devices = requests.get('https://api.pushbullet.com/v2/devices', auth=(api_key, '')).json()
-    #deviceid = devices['devices'][2]['iden']
     data = {
             "type" : "note",
             "title" : postTitle,
             "body" : key
             }
     push = requests.post('https://api.pushbullet.com/v2/pushes', auth=(api_key, ''), data=data)
-    print(push.json())
 
 def getKey(post):
     code = re.findall(r'[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+', post)  
@@ -52,8 +47,11 @@ def main():
             if key:
                 if not key in keys:
                     keys.append(key)
-                    for thing in key:
-                        pushToDevices(thing, key[thing])
+                    for title in key:
+                        if pushbullet:
+                            pushToDevices(title, key[title])
+                        else:
+                            print(key)
         time.sleep(31)
 
 if __name__ == '__main__':
