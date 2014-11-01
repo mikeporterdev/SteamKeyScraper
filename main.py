@@ -16,7 +16,7 @@ def pushToDevices(postTitle, key):
             "title" : postTitle,
             "body" : key
             }
-    push = requests.post('https://api.pushbullet.com/v2/pushes', auth=(api_key, ''), data=data)
+    requests.post('https://api.pushbullet.com/v2/pushes', auth=(api_key, ''), data=data)
 
 def getKey(post):
     code = re.findall(r'[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}', post)  
