@@ -19,7 +19,7 @@ def pushToDevices(postTitle, key):
     requests.post('https://api.pushbullet.com/v2/pushes', auth=(api_key, ''), data=data)
 
 def getKey(post):
-    code = re.findall(r'[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}', post)  
+    code = re.findall(r'(\w{5}-){2}\w{5}', post)  
     return code
 
 def scrapeSubreddit(connection, subreddit):
